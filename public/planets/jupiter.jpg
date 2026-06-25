@@ -1,0 +1,14 @@
+<svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="jupiter-grad" cx="40%" cy="40%">
+      <stop offset="0%" style="stop-color:#d4a574;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8b6f47;stop-opacity:1" />
+    </radialGradient>
+  </defs>
+  <circle cx="256" cy="256" r="256" fill="url(#jupiter-grad)" />
+  <ellipse cx="256" cy="180" rx="240" ry="30" fill="#b89968" opacity="0.4" />
+  <ellipse cx="256" cy="240" rx="240" ry="25" fill="#e0c590" opacity="0.3" />
+  <ellipse cx="256" cy="300" rx="240" ry="35" fill="#a67c52" opacity="0.4" />
+  <ellipse cx="256" cy="360" rx="240" ry="28" fill="#b89968" opacity="0.3" />
+  <ellipse cx="180" cy="200" rx="40" ry="60" fill="#c85a3a" opacity="0.6" />
+</svg>

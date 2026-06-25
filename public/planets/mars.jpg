@@ -1,0 +1,13 @@
+<svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="mars-grad" cx="40%" cy="40%">
+      <stop offset="0%" style="stop-color:#e57c5e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#b8442f;stop-opacity:1" />
+    </radialGradient>
+  </defs>
+  <circle cx="256" cy="256" r="256" fill="url(#mars-grad)" />
+  <circle cx="200" cy="180" r="35" fill="#a03820" opacity="0.6" />
+  <circle cx="340" cy="240" r="45" fill="#a03820" opacity="0.5" />
+  <circle cx="260" cy="340" r="28" fill="#a03820" opacity="0.6" />
+  <circle cx="160" cy="300" r="22" fill="#a03820" opacity="0.5" />
+</svg>
