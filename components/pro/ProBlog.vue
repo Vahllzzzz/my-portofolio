@@ -126,15 +126,47 @@ time {
 
 @media (max-width: 720px) {
   .blog {
-    padding: 72px 24px;
+    padding: 72px 20px;
   }
 
-  article {
+  .blog-article {
     grid-template-columns: 1fr;
+    padding: 20px;
+    gap: 12px;
   }
 
   .section-heading h2 {
-    font-size: 2rem;
+    font-size: 1.8rem;
+  }
+
+  time {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 560px) {
+  .blog {
+    padding: 56px 16px;
+  }
+
+  .section-heading h2 {
+    font-size: 1.5rem;
+  }
+
+  .blog-article {
+    padding: 18px;
+  }
+
+  h3 {
+    font-size: 1.05rem;
+  }
+
+  p {
+    font-size: 0.88rem;
+  }
+
+  span {
+    font-size: 0.7rem;
   }
 }
 </style>

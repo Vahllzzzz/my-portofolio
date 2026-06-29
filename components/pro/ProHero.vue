@@ -142,32 +142,33 @@ function enterSolar() {
 }
 
 function launchSolar() {
+  const isMobile = window.innerWidth <= 920
+  
+  if (isMobile) {
+    // On mobile, just switch mode without animation
+    store.setMode("solar")
+    return
+  }
 
-  const rect =
-    solarPreview.value.getBoundingClientRect()
-
+  // Desktop: animate from preview
+  const rect = solarPreview.value.getBoundingClientRect()
   window.solarTargetRect = rect
 
   enterSolar()
 
-  const clone =
-    solarPreview.value.cloneNode(true)
-
+  const clone = solarPreview.value.cloneNode(true)
   document.body.appendChild(clone)
 
-  Object.assign(
-    clone.style,
-    {
-      position: "fixed",
-      left: rect.left + "px",
-      top: rect.top + "px",
-      width: rect.width + "px",
-      height: rect.height + "px",
-      zIndex: 9999,
-      borderRadius: "12px",
-      overflow: "hidden"
-    }
-  )
+  Object.assign(clone.style, {
+    position: "fixed",
+    left: rect.left + "px",
+    top: rect.top + "px",
+    width: rect.width + "px",
+    height: rect.height + "px",
+    zIndex: 9999,
+    borderRadius: "12px",
+    overflow: "hidden"
+  })
 
   gsap.to(clone, {
     left: 0,
@@ -177,11 +178,8 @@ function launchSolar() {
     borderRadius: 0,
     duration: 1,
     ease: "power3.inOut",
-
     onComplete() {
-
       store.setMode("solar")
-
       clone.remove()
     }
   })
@@ -573,7 +571,8 @@ h1 {
   .hero {
     grid-template-columns: 1fr;
     min-height: auto;
-    padding: 116px 24px 56px;
+    padding: 80px 20px 56px;
+    gap: 32px;
   }
 
   .hero-copy,
@@ -583,21 +582,90 @@ h1 {
   }
 
   h1 {
-    font-size: 3rem;
+    font-size: 2.5rem;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+  }
+
+  .eyebrow {
+    font-size: 0.75rem;
+    padding: 6px 10px;
+  }
+
+  .cta a {
+    min-height: 42px;
+    padding: 0 16px;
+    font-size: 0.88rem;
+  }
+
+  .hero-panel {
+    max-width: 100%;
   }
 }
 
 @media (max-width: 560px) {
+  .hero {
+    padding: 70px 16px 40px;
+  }
+
   h1 {
-    font-size: 2.45rem;
+    font-size: 2rem;
+  }
+
+  .subtitle {
+    font-size: 0.95rem;
+  }
+
+  .cta {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .cta a {
+    width: 100%;
   }
 
   .panel-grid {
     grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 12px;
   }
 
   .large {
     grid-row: auto;
+    min-height: 200px;
+  }
+
+  .preview-stage {
+    height: 160px;
+  }
+
+  .explore {
+    grid-column: auto;
+  }
+
+  .explore h3 {
+    font-size: 0.9rem;
+  }
+
+  .explore p {
+    font-size: 0.85rem;
+  }
+
+  .explore-btn {
+    padding: 10px 14px;
+    font-size: 0.85rem;
+  }
+
+  .metric strong {
+    font-size: 2rem;
+  }
+
+  .metric span,
+  .stack span {
+    font-size: 0.78rem;
   }
 }
 

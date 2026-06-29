@@ -30,22 +30,20 @@ const { setMode, togglePause } = store
 import gsap from "gsap"
 
 function backToPro() {
-
   const rect = window.solarTargetRect
+  const solar = document.querySelector(".solar-system") as HTMLElement
+  
+  // Check if mobile
+  const isMobile = window.innerWidth <= 920
 
-  const solar =
-    document.querySelector(
-      ".solar-system"
-    ) as HTMLElement
-
-  if (!solar || !rect) {
+  if (!solar || !rect || isMobile) {
+    // On mobile or no rect, just switch without animation
     setMode("pro")
     return
   }
 
-  const clone =
-    solar.cloneNode(true) as HTMLElement
-
+  // Desktop: animate back to preview
+  const clone = solar.cloneNode(true) as HTMLElement
   document.body.appendChild(clone)
 
   Object.assign(clone.style, {
@@ -58,8 +56,6 @@ function backToPro() {
     margin: "0"
   })
 
-  // baru setelah clone muncul,
-  // halaman asli diganti ke Pro
   setMode("pro")
 
   gsap.to(clone, {
@@ -70,7 +66,6 @@ function backToPro() {
     borderRadius: "12px",
     duration: 1,
     ease: "power3.inOut",
-
     onComplete() {
       clone.remove()
     }
@@ -85,18 +80,13 @@ function backToPro() {
   right: 20px;
   display: flex;
   align-items: center;
-
   gap: 4px;
   padding: 4px;
-
   border: 1px solid rgba(255,255,255,.14);
   border-radius: 8px;
-
   background: rgba(11,11,15,.72);
   backdrop-filter: blur(14px);
-
-  z-index: 100;
-
+  z-index: 102;
   overflow: hidden;
   transition: all .45s cubic-bezier(.22,1,.36,1);
 }
@@ -111,6 +101,7 @@ button {
   cursor: pointer;
   font: 700 13px/1 Inter, system-ui, sans-serif;
   transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  white-space: nowrap;
 }
 
 button:hover {
@@ -173,5 +164,37 @@ button:hover {
 
 .switcher{
   gap: 6px;
+}
+
+/* Mobile Responsive */
+@media (max-width: 920px) {
+  .switcher {
+    top: auto;
+    bottom: 20px;
+    right: 20px;
+    left: 20px;
+    justify-content: center;
+  }
+
+  button {
+    flex: 1;
+    min-width: 0;
+    max-width: 150px;
+  }
+}
+
+@media (max-width: 560px) {
+  .switcher {
+    bottom: 16px;
+    right: 16px;
+    left: 16px;
+    padding: 3px;
+    gap: 4px;
+  }
+
+  button {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
 }
 </style>

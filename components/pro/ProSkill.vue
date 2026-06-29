@@ -128,7 +128,7 @@ span {
 
 @media (max-width: 920px) {
   .skills {
-    padding: 72px 24px;
+    padding: 72px 20px;
   }
 
   .skill-grid {
@@ -136,7 +136,39 @@ span {
   }
 
   .section-heading h2 {
-    font-size: 2rem;
+    font-size: 1.8rem;
+  }
+}
+
+@media (max-width: 560px) {
+  .skills {
+    padding: 56px 16px;
+  }
+
+  .section-heading h2 {
+    font-size: 1.5rem;
+  }
+
+  article {
+    padding: 20px;
+  }
+
+  h3 {
+    font-size: 1.05rem;
+  }
+
+  article p {
+    font-size: 0.9rem;
+    margin: 10px 0 16px;
+  }
+
+  .list {
+    gap: 6px;
+  }
+
+  span {
+    font-size: 0.7rem;
+    padding: 6px 8px;
   }
 }
 </style>

@@ -243,15 +243,19 @@ span {
   .friends-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .section-heading {
+    grid-template-columns: 1fr;
+  }
+
+  .section-heading a {
+    justify-self: start;
+  }
 }
 
 @media (max-width: 640px) {
   .friends {
-    padding: 72px 24px;
-  }
-
-  .section-heading {
-    grid-template-columns: 1fr;
+    padding: 72px 20px;
   }
 
   .friends-grid {
@@ -259,7 +263,41 @@ span {
   }
 
   .section-heading h2 {
-    font-size: 2rem;
+    font-size: 1.8rem;
+  }
+
+  .section-heading a {
+    width: 100%;
+    justify-content: center;
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 560px) {
+  .friends {
+    padding: 56px 16px;
+  }
+
+  .section-heading h2 {
+    font-size: 1.5rem;
+  }
+
+  .friend-card {
+    padding: 12px;
+  }
+
+  img {
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+  }
+
+  strong {
+    font-size: 0.9rem;
+  }
+
+  span {
+    font-size: 0.78rem;
   }
 }
 </style>

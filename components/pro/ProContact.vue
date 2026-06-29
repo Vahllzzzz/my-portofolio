@@ -133,8 +133,8 @@ a:hover {
 @media (max-width: 760px) {
   .contact {
     grid-template-columns: 1fr;
-    width: calc(100% - 48px);
-    padding: 28px;
+    width: calc(100% - 40px);
+    padding: 24px;
   }
 
   .links {
@@ -142,7 +142,33 @@ a:hover {
   }
 
   h2 {
-    font-size: 1.7rem;
+    font-size: 1.6rem;
+  }
+}
+
+@media (max-width: 560px) {
+  .contact {
+    width: calc(100% - 32px);
+    padding: 20px;
+  }
+
+  h2 {
+    font-size: 1.4rem;
+  }
+
+  .contact-copy span {
+    font-size: 0.95rem;
+  }
+
+  .links {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  a {
+    width: 100%;
+    min-height: 42px;
+    font-size: 0.85rem;
   }
 }
 </style>

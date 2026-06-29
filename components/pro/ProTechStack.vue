@@ -170,7 +170,7 @@ li {
 
 @media (max-width: 640px) {
   .tech-stack {
-    padding: 72px 24px;
+    padding: 72px 20px;
   }
 
   .stack-grid {
@@ -178,11 +178,49 @@ li {
   }
 
   .section-heading h2 {
-    font-size: 2rem;
+    font-size: 1.8rem;
   }
 
   article p {
     min-height: auto;
+  }
+}
+
+@media (max-width: 560px) {
+  .tech-stack {
+    padding: 56px 16px;
+  }
+
+  .section-heading h2 {
+    font-size: 1.5rem;
+  }
+
+  article {
+    padding: 18px;
+  }
+
+  .topline span {
+    width: 38px;
+    height: 38px;
+    font-size: 0.75rem;
+  }
+
+  h3 {
+    font-size: 0.95rem;
+  }
+
+  article p {
+    font-size: 0.88rem;
+    margin: 12px 0 14px;
+  }
+
+  ul {
+    gap: 6px;
+  }
+
+  li {
+    font-size: 0.7rem;
+    padding: 6px 8px;
   }
 }
 </style>

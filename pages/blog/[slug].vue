@@ -253,6 +253,7 @@ useHead(() => ({
 @media (max-width: 768px) {
   .blog-post {
     padding: 32px 24px;
+    border-radius: 8px;
   }
 
   .post-title {
@@ -263,6 +264,71 @@ useHead(() => ({
     flex-direction: column;
     gap: 16px;
     align-items: flex-start;
+  }
+
+  .post-header {
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+  }
+
+  .author-card {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 560px) {
+  .blog-post-page {
+    padding: 16px;
+  }
+
+  .blog-post {
+    padding: 24px 16px;
+  }
+
+  .post-title {
+    font-size: 1.6rem;
+  }
+
+  .back-link {
+    font-size: 0.85rem;
+    padding: 8px 12px;
+  }
+
+  .post-category {
+    font-size: 0.75rem;
+    padding: 5px 10px;
+  }
+
+  .post-meta {
+    font-size: 0.85rem;
+    gap: 12px;
+  }
+
+  .tag {
+    font-size: 0.75rem;
+    padding: 5px 10px;
+  }
+
+  .author-card {
+    padding: 16px;
+  }
+
+  .author-info h3 {
+    font-size: 1.1rem;
+  }
+
+  .author-info p {
+    font-size: 0.9rem;
+  }
+
+  .btn-primary {
+    width: 100%;
+    padding: 12px 20px;
+    font-size: 0.9rem;
+  }
+
+  .not-found h1 {
+    font-size: 2rem;
   }
 }
 </style>
@@ -370,5 +436,56 @@ useHead(() => ({
   margin: 48px 0;
   border: none;
   border-top: 1px solid var(--border);
+}
+
+/* Mobile Responsive for Markdown */
+@media (max-width: 768px) {
+  .markdown-body h1 {
+    font-size: 1.8rem;
+  }
+
+  .markdown-body h2 {
+    font-size: 1.5rem;
+    margin-top: 32px;
+  }
+
+  .markdown-body h3 {
+    font-size: 1.2rem;
+  }
+
+  .markdown-body pre {
+    padding: 16px;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 560px) {
+  .markdown-body h1 {
+    font-size: 1.5rem;
+  }
+
+  .markdown-body h2 {
+    font-size: 1.3rem;
+  }
+
+  .markdown-body h3 {
+    font-size: 1.1rem;
+  }
+
+  .markdown-body p,
+  .markdown-body ul,
+  .markdown-body ol {
+    font-size: 0.95rem;
+  }
+
+  .markdown-body pre {
+    padding: 12px;
+    font-size: 0.8rem;
+  }
+
+  .markdown-body blockquote {
+    padding: 12px 16px;
+    margin: 16px 0;
+  }
 }
 </style>

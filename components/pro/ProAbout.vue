@@ -132,12 +132,43 @@ h2 {
 @media (max-width: 920px) {
   .about {
     grid-template-columns: 1fr;
-    width: calc(100% - 48px);
+    width: calc(100% - 40px);
     padding: 72px 0;
   }
 
   h2 {
-    font-size: 2rem;
+    font-size: 1.8rem;
+  }
+}
+
+@media (max-width: 560px) {
+  .about {
+    width: calc(100% - 32px);
+    padding: 56px 0;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  .eyebrow {
+    font-size: 0.75rem;
+  }
+
+  .copy p:not(.eyebrow) {
+    font-size: 0.95rem;
+  }
+
+  .stats div {
+    padding: 18px;
+  }
+
+  .stats strong {
+    font-size: 1.7rem;
+  }
+
+  .stats span {
+    font-size: 0.85rem;
   }
 }
 </style>

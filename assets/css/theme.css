@@ -43,3 +43,33 @@ body {
   color: var(--text);
   transition: background-color 0.3s ease, color 0.3s ease;
 }
+
+/* Mobile Font Size Adjustments */
+@media (max-width: 768px) {
+  :root {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 560px) {
+  :root {
+    font-size: 15px;
+  }
+}
+
+/* Prevent zoom on input focus on iOS */
+@media (max-width: 768px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* Better touch targets on mobile */
+@media (max-width: 768px) {
+  button,
+  a {
+    min-height: 44px;
+  }
+}

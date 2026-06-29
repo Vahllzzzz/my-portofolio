@@ -5,7 +5,8 @@
       <div ref="pixelGrid" class="pixel-grid"></div>
     </div>
 
-    <nav class="pro-nav" :class="{ scrolled: isScrolled }" aria-label="Portfolio navigation">
+    <!-- Desktop Navigation -->
+    <nav class="pro-nav desktop-nav" :class="{ scrolled: isScrolled }" aria-label="Portfolio navigation">
       <a href="#hero" :class="{ active: activeSection === 'hero' }">
         {{ language === 'en' ? 'Home' : 'Beranda' }}
       </a>
@@ -44,6 +45,63 @@
         </button>
       </ClientOnly>
     </nav>
+
+    <!-- Mobile Navigation -->
+    <nav class="mobile-nav" :class="{ scrolled: isScrolled }">
+      <button class="burger-btn" @click="toggleMobileMenu" :aria-label="mobileMenuOpen ? 'Close menu' : 'Open menu'">
+        <span :class="{ open: mobileMenuOpen }"></span>
+        <span :class="{ open: mobileMenuOpen }"></span>
+        <span :class="{ open: mobileMenuOpen }"></span>
+      </button>
+
+      <div class="mobile-actions">
+        <button
+          class="theme-toggle-btn"
+          @click="toggleTheme"
+          :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
+        >
+          {{ isDark ? "☀️" : "🌙" }}
+        </button>
+        <ClientOnly>
+          <button
+              @click="handleLanguageChange('id')"
+              :class="{ active: language === 'id' }"
+              class="lang-btn"
+              title="Switch to Indonesian"
+              :disabled="changingLanguage"
+          >
+              ID
+          </button>
+
+          <button
+              @click="handleLanguageChange('en')"
+              :class="{ active: language === 'en' }"
+              class="lang-btn"
+              title="Switch to English"
+              :disabled="changingLanguage"
+           >
+              EN
+          </button>
+        </ClientOnly>
+      </div>
+    </nav>
+
+    <!-- Mobile Menu Overlay -->
+    <Transition name="menu">
+      <div v-if="mobileMenuOpen" class="mobile-menu-overlay" @click="closeMobileMenu">
+        <div class="mobile-menu" @click.stop>
+          <a href="#hero" :class="{ active: activeSection === 'hero' }" @click="closeMobileMenu">
+            {{ language === 'en' ? 'Home' : 'Beranda' }}
+          </a>
+          <a href="#about" :class="{ active: activeSection === 'about' }" @click="closeMobileMenu">About</a>
+          <a href="#projects" :class="{ active: activeSection === 'projects' }" @click="closeMobileMenu">Projects</a>
+          <a href="#tech-stack" :class="{ active: activeSection === 'tech-stack' }" @click="closeMobileMenu">Stack</a>
+          <a href="#blog" :class="{ active: activeSection === 'blog' }" @click="closeMobileMenu">Blog</a>
+          <a href="#friends" :class="{ active: activeSection === 'friends' }" @click="closeMobileMenu">Friends</a>
+          <a href="#contact" :class="{ active: activeSection === 'contact' }" @click="closeMobileMenu">Contact</a>
+        </div>
+      </div>
+    </Transition>
 
     <ProHero />
     <ProAbout />
@@ -161,11 +219,27 @@ watch(language, (newVal) => {
 
 const activeSection = ref("hero")
 const isScrolled = ref(false)
+const mobileMenuOpen = ref(false)
 
 // Theme toggle
 const isDark = ref(true)
 const themeOverlay = ref<HTMLElement | null>(null)
 const pixelGrid = ref<HTMLElement | null>(null)
+
+function toggleMobileMenu() {
+  mobileMenuOpen.value = !mobileMenuOpen.value
+  // Prevent body scroll when menu is open
+  if (mobileMenuOpen.value) {
+    document.body.style.overflow = 'hidden'
+  } else {
+    document.body.style.overflow = ''
+  }
+}
+
+function closeMobileMenu() {
+  mobileMenuOpen.value = false
+  document.body.style.overflow = ''
+}
 
 function toggleTheme() {
   if (!themeOverlay.value || !pixelGrid.value) return
@@ -177,22 +251,24 @@ function toggleTheme() {
   // Set overlay color
   const bgColor = newTheme ? '#0b0b0f' : '#f5f7fb'
   
-  // Create grid pixels
-  const pixelSize = 50 // Size of each pixel
-  const cols = Math.ceil(window.innerWidth / pixelSize)
-  const rows = Math.ceil(window.innerHeight / pixelSize)
+  // Create grid pixels - responsive size
+  const pixelSize = window.innerWidth < 560 ? 80 : window.innerWidth < 920 ? 60 : 50
+  const cols = Math.ceil(window.innerWidth / pixelSize) + 1 // +1 untuk safety
+  const rows = Math.ceil(window.innerHeight / pixelSize) + 1 // +1 untuk safety
   const totalPixels = cols * rows
   
   // Clear previous pixels
   grid.innerHTML = ''
+  
+  // Set grid style
+  grid.style.gridTemplateColumns = `repeat(${cols}, ${pixelSize}px)`
+  grid.style.gridAutoRows = `${pixelSize}px`
   
   // Create pixel elements
   const pixels: HTMLElement[] = []
   for (let i = 0; i < totalPixels; i++) {
     const pixel = document.createElement('div')
     pixel.className = 'pixel'
-    pixel.style.width = `${pixelSize}px`
-    pixel.style.height = `${pixelSize}px`
     pixel.style.background = bgColor
     grid.appendChild(pixel)
     pixels.push(pixel)
@@ -286,6 +362,7 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener("scroll", handleScroll)
   observer?.disconnect()
+  document.body.style.overflow = '' // Cleanup
 })
 </script>
 
@@ -325,6 +402,10 @@ onUnmounted(() => {
   box-shadow: none;
   backdrop-filter: blur(2px);
   transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, backdrop-filter 0.3s ease;
+}
+
+.mobile-nav {
+  display: none;
 }
 
 .pro-nav.scrolled {
@@ -444,14 +525,14 @@ onUnmounted(() => {
   width: 100%;
   height: 100%;
   display: grid;
-  grid-template-columns: repeat(auto-fit, 50px);
-  grid-auto-rows: 50px;
   gap: 0;
 }
 
 .pixel {
   will-change: transform, opacity;
   transform-origin: center;
+  width: 100%;
+  height: 100%;
 }
 
 footer {
@@ -462,15 +543,206 @@ footer {
   font-weight: 700;
 }
 
-@media (max-width: 760px) {
-  .pro-nav {
-    top: 74px;
-    right: 20px;
-    max-width: calc(100vw - 40px);
+@media (max-width: 920px) {
+  .desktop-nav {
+    display: none;
   }
 
-  footer {
-    width: calc(100% - 48px);
+  .mobile-nav {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 8px;
+    border: 1px solid var(--border-dim);
+    border-radius: 8px;
+    background: var(--glass-bg-clear);
+    backdrop-filter: blur(2px);
+    transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, backdrop-filter 0.3s ease;
+  }
+
+  .mobile-nav.scrolled {
+    border-color: var(--border);
+    background: var(--glass-bg);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.28);
+    backdrop-filter: blur(14px);
+  }
+
+  .mobile-actions {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+  }
+
+  .burger-btn {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    min-width: 36px;
+    min-height: 36px;
+    padding: 8px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--border-dim);
+    cursor: pointer;
+    transition: transform 0.3s ease, background 0.2s ease;
+  }
+
+  .burger-btn:hover {
+    background: var(--border);
+  }
+
+  .burger-btn:active {
+    transform: scale(0.95);
+  }
+
+  .burger-btn span {
+    display: block;
+    width: 18px;
+    height: 2px;
+    background: var(--text);
+    border-radius: 2px;
+    transition: all 0.3s ease;
+  }
+
+  .burger-btn span.open:nth-child(1) {
+    transform: translateY(6px) rotate(45deg);
+  }
+
+  .burger-btn span.open:nth-child(2) {
+    opacity: 0;
+  }
+
+  .burger-btn span.open:nth-child(3) {
+    transform: translateY(-6px) rotate(-45deg);
+  }
+
+  .mobile-menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 99;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+  }
+
+  .mobile-menu {
+    position: absolute;
+    top: 70px;
+    left: 10px;
+    right: 10px;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--bg-card);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .mobile-menu a {
+    display: flex;
+    align-items: center;
+    min-height: 48px;
+    padding: 0 16px;
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 1rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+
+  .mobile-menu a:active {
+    transform: scale(0.98);
+  }
+
+  .mobile-menu a.active {
+    background: var(--primary);
+    color: #ffffff;
+  }
+
+  .mobile-menu a:not(.active):hover {
+    background: var(--border-dim);
+  }
+
+  .mobile-actions .lang-btn,
+  .mobile-actions .theme-toggle-btn {
+    min-height: 36px;
+    min-width: 36px;
+    padding: 0 8px;
+    font-size: 0.75rem;
+  }
+
+  /* Menu transitions */
+  .menu-enter-active,
+  .menu-leave-active {
+    transition: opacity 0.3s ease;
+  }
+
+  .menu-enter-active .mobile-menu,
+  .menu-leave-active .mobile-menu {
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+
+  .menu-enter-from,
+  .menu-leave-to {
+    opacity: 0;
+  }
+
+  .menu-enter-from .mobile-menu {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+
+  .menu-leave-to .mobile-menu {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+}
+
+@media (max-width: 560px) {
+  .mobile-nav {
+    padding: 6px 6px;
+  }
+
+  .mobile-actions {
+    gap: 4px;
+  }
+
+  .mobile-actions .lang-btn,
+  .mobile-actions .theme-toggle-btn {
+    min-height: 32px;
+    min-width: 32px;
+    padding: 0 6px;
+    font-size: 0.7rem;
+  }
+
+  .burger-btn {
+    min-width: 32px;
+    min-height: 32px;
+    padding: 6px;
+  }
+
+  .burger-btn span {
+    width: 16px;
+  }
+
+  .mobile-menu {
+    top: 60px;
+  }
+
+  .mobile-menu a {
+    min-height: 44px;
+    font-size: 0.95rem;
   }
 }
 </style>

@@ -311,15 +311,63 @@ h3 {
 
 @media (max-width: 920px) {
   .projects {
-    padding: 72px 24px;
+    padding: 72px 20px;
   }
 
   .grid {
     grid-template-columns: 1fr;
   }
 
+  .featured {
+    grid-column: auto;
+  }
+
   .section-heading h2 {
     font-size: 2rem;
+  }
+
+  .project-visual {
+    height: 160px;
+  }
+}
+
+@media (max-width: 560px) {
+  .projects {
+    padding: 56px 16px;
+  }
+
+  .section-heading h2 {
+    font-size: 1.7rem;
+  }
+
+  .section-heading .subtitle {
+    font-size: 0.95rem;
+  }
+
+  .card-body {
+    padding: 18px;
+  }
+
+  h3 {
+    font-size: 1.1rem;
+  }
+
+  .desc {
+    font-size: 0.88rem;
+  }
+
+  .actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .actions a {
+    width: 100%;
+    text-align: center;
+  }
+
+  .project-visual {
+    height: 140px;
   }
 }
 
