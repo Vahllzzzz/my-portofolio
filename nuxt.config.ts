@@ -10,6 +10,12 @@ export default defineNuxtConfig({
   },
   app: {
     head: {
+      script: [
+        {
+          innerHTML:
+            "try{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',t==='light'?'light':'dark')}catch(e){document.documentElement.setAttribute('data-theme','dark')}",
+        },
+      ],
       title: 'Reihan Azka Vahlepy - Portfolio',
       meta: [
         { charset: 'utf-8' },

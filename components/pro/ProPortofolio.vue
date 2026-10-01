@@ -1,53 +1,61 @@
 <template>
   <div class="pro-container">
-    <!-- Theme transition overlay with grid pixels -->
-    <div ref="themeOverlay" class="theme-overlay">
-      <div ref="pixelGrid" class="pixel-grid"></div>
+    <Preloader />
+    <CustomCursor />
+
+    <!-- scroll progress -->
+    <div class="scroll-progress" aria-hidden="true">
+      <i ref="progressBar"></i>
     </div>
 
     <!-- Desktop Navigation -->
-    <nav class="pro-nav desktop-nav" :class="{ scrolled: isScrolled }" aria-label="Portfolio navigation">
+    <nav
+      ref="navEl"
+      class="pro-nav desktop-nav"
+      :class="{ scrolled: isScrolled, 'nav-hidden': navHidden }"
+      aria-label="Portfolio navigation"
+      @focusin="navHidden = false"
+    >
       <a href="#hero" :class="{ active: activeSection === 'hero' }">
         {{ language === 'en' ? 'Home' : 'Beranda' }}
       </a>
       <a href="#about" :class="{ active: activeSection === 'about' }">About</a>
       <a href="#projects" :class="{ active: activeSection === 'projects' }">Projects</a>
       <a href="#tech-stack" :class="{ active: activeSection === 'tech-stack' }">Stack</a>
+      <a href="#certificates" :class="{ active: activeSection === 'certificates' }">
+        {{ language === 'en' ? 'Certificates' : 'Sertifikat' }}
+      </a>
       <a href="#blog" :class="{ active: activeSection === 'blog' }">Blog</a>
       <a href="#friends" :class="{ active: activeSection === 'friends' }">Friends</a>
       <a href="#contact" :class="{ active: activeSection === 'contact' }">Contact</a>
-      <button
-        class="theme-toggle-btn"
-        @click="toggleTheme"
-        :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
-      >
-        {{ isDark ? "☀️" : "🌙" }}
-      </button>
-      <ClientOnly>
-        <button
-            @click="handleLanguageChange('id')"
-            :class="{ active: language === 'id' }"
-            class="lang-btn"
-            title="Switch to Indonesian"
-            :disabled="changingLanguage"
-        >
-            ID
-        </button>
 
+      <span ref="pillEl" class="nav-pill" aria-hidden="true"></span>
+
+      <ClientOnly>
+        <ThemeToggle />
         <button
-            @click="handleLanguageChange('en')"
-            :class="{ active: language === 'en' }"
-            class="lang-btn"
-            title="Switch to English"
-            :disabled="changingLanguage"
-         >
-            EN
+          @click="handleLanguageChange('id')"
+          :class="{ active: language === 'id' }"
+          class="lang-btn"
+          title="Switch to Indonesian"
+          :disabled="changingLanguage"
+        >
+          ID
+        </button>
+        <button
+          @click="handleLanguageChange('en')"
+          :class="{ active: language === 'en' }"
+          class="lang-btn"
+          title="Switch to English"
+          :disabled="changingLanguage"
+        >
+          EN
         </button>
       </ClientOnly>
     </nav>
 
     <!-- Mobile Navigation -->
-    <nav class="mobile-nav" :class="{ scrolled: isScrolled }">
+    <nav class="mobile-nav" :class="{ scrolled: isScrolled, 'nav-hidden': navHidden }">
       <button class="burger-btn" @click="toggleMobileMenu" :aria-label="mobileMenuOpen ? 'Close menu' : 'Open menu'">
         <span :class="{ open: mobileMenuOpen }"></span>
         <span :class="{ open: mobileMenuOpen }"></span>
@@ -55,32 +63,23 @@
       </button>
 
       <div class="mobile-actions">
-        <button
-          class="theme-toggle-btn"
-          @click="toggleTheme"
-          :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
-        >
-          {{ isDark ? "☀️" : "🌙" }}
-        </button>
         <ClientOnly>
+          <ThemeToggle />
           <button
-              @click="handleLanguageChange('id')"
-              :class="{ active: language === 'id' }"
-              class="lang-btn"
-              title="Switch to Indonesian"
-              :disabled="changingLanguage"
+            @click="handleLanguageChange('id')"
+            :class="{ active: language === 'id' }"
+            class="lang-btn"
+            :disabled="changingLanguage"
           >
-              ID
+            ID
           </button>
-
           <button
-              @click="handleLanguageChange('en')"
-              :class="{ active: language === 'en' }"
-              class="lang-btn"
-              title="Switch to English"
-              :disabled="changingLanguage"
-           >
-              EN
+            @click="handleLanguageChange('en')"
+            :class="{ active: language === 'en' }"
+            class="lang-btn"
+            :disabled="changingLanguage"
+          >
+            EN
           </button>
         </ClientOnly>
       </div>
@@ -96,6 +95,9 @@
           <a href="#about" :class="{ active: activeSection === 'about' }" @click="closeMobileMenu">About</a>
           <a href="#projects" :class="{ active: activeSection === 'projects' }" @click="closeMobileMenu">Projects</a>
           <a href="#tech-stack" :class="{ active: activeSection === 'tech-stack' }" @click="closeMobileMenu">Stack</a>
+          <a href="#certificates" :class="{ active: activeSection === 'certificates' }" @click="closeMobileMenu">
+            {{ language === 'en' ? 'Certificates' : 'Sertifikat' }}
+          </a>
           <a href="#blog" :class="{ active: activeSection === 'blog' }" @click="closeMobileMenu">Blog</a>
           <a href="#friends" :class="{ active: activeSection === 'friends' }" @click="closeMobileMenu">Friends</a>
           <a href="#contact" :class="{ active: activeSection === 'contact' }" @click="closeMobileMenu">Contact</a>
@@ -108,6 +110,7 @@
     <ProSkill />
     <ProProjects />
     <ProTechStack />
+    <ProCertificates />
     <ProBlog />
     <ProFriends />
     <ProContact />
@@ -116,7 +119,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, watch } from "vue"
+import { nextTick, onMounted, onUnmounted, ref, watch } from "vue"
 import gsap from "gsap"
 import ProHero from "./ProHero.vue"
 import ProProjects from "./ProProjects.vue"
@@ -124,247 +127,223 @@ import ProSkill from "./ProSkill.vue"
 import ProAbout from "./ProAbout.vue"
 import ProContact from "./ProContact.vue"
 import ProTechStack from "./ProTechStack.vue"
+import ProCertificates from "./ProCertificates.vue"
 import ProBlog from "./ProBlog.vue"
 import ProFriends from "./ProFriends.vue"
 import ProFooter from "./ProFooter.vue"
+import Preloader from "../common/Preloader.vue"
+import ThemeToggle from "../common/ThemeToggle.vue"
+import CustomCursor from "../common/CustomCursor.vue"
 import { useLanguage } from "../../composables/useLanguage"
 
 const { language, setLocale } = useLanguage()
 
-// Language change animation
+/* ---------- language switch (hardened) ---------- */
 const changingLanguage = ref(false)
 
-function handleLanguageChange(newLocale: "en" | "id") {
+const ANIM_SKIP =
+  '.pro-nav, .mobile-nav, .mobile-menu, .preloader, .solar-system, .canvas-container, .switcher, .theme-overlay, .scroll-progress, [aria-hidden="true"]'
+
+function collectTextElements(): HTMLElement[] {
+  const taken = new Set<HTMLElement>()
+  const out: HTMLElement[] = []
+
+  document
+    .querySelectorAll("h1, h2, h3, h4, p, span, a, li, strong, em, small, time")
+    .forEach((node) => {
+      const el = node as HTMLElement
+      if (el.tagName === "BUTTON") return
+      if (el.closest(ANIM_SKIP)) return
+      if (!el.textContent?.trim()) return
+
+      // skip kalau ancestor-nya udah keambil (hindari dobel animasi)
+      let p = el.parentElement
+      let covered = false
+      while (p) {
+        if (taken.has(p)) { covered = true; break }
+        p = p.parentElement
+      }
+      if (covered) return
+
+      taken.add(el)
+      out.push(el)
+    })
+
+  return out
+}
+
+async function handleLanguageChange(newLocale: "en" | "id") {
   if (changingLanguage.value || language.value === newLocale) return
-  
   changingLanguage.value = true
-  
-  // Get all text elements that need animation
-  const textElements = document.querySelectorAll('h1, h2, h3, p, span:not(.lang-btn), a:not(.lang-btn)')
-  const elementsToAnimate: HTMLElement[] = []
-  
-  textElements.forEach((el) => {
-    const htmlEl = el as HTMLElement
-    // Skip if element is in nav, is a button, or has no text
-    if (
-      htmlEl.closest('.pro-nav') || 
-      htmlEl.tagName === 'BUTTON' ||
-      htmlEl.classList.contains('lang-btn') ||
-      htmlEl.classList.contains('theme-toggle-btn') ||
-      !htmlEl.textContent?.trim()
-    ) return
-    
-    elementsToAnimate.push(htmlEl)
-  })
-  
-  // Timeline for language change
-  const tl = gsap.timeline({
-    onComplete: () => {
-      changingLanguage.value = false
-    }
-  })
-  
-  // Shuffle elements for random effect
-  const shuffled = [...elementsToAnimate].sort(() => Math.random() - 0.5)
-  
-  // Animate out current text with stagger
-  tl.to(shuffled, {
+
+  const els = collectTextElements()
+
+  if (!els.length || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    setLocale(newLocale)
+    changingLanguage.value = false
+    return
+  }
+
+  // keluar
+  await gsap.to(els, {
     opacity: 0,
     y: -10,
-    rotationX: -90,
-    transformOrigin: 'center bottom',
-    duration: 0.3,
-    stagger: {
-      amount: 0.4,
-      from: 'random',
-      grid: 'auto',
-      ease: 'power1.in'
-    },
-    ease: 'power2.in'
+    duration: 0.28,
+    stagger: { amount: 0.35, from: "random" },
+    ease: "power2.in",
   })
-  
-  // Change language at midpoint
-  tl.call(() => {
-    setLocale(newLocale)
-  }, [], 0.25)
-  
-  // Wait for Vue to update DOM
-  tl.add(() => {}, 0.05)
-  
-  // Animate in new text with stagger
-  tl.fromTo(shuffled, {
-    opacity: 0,
-    y: 10,
-    rotationX: 90,
-    transformOrigin: 'center top'
-  }, {
-    opacity: 1,
-    y: 0,
-    rotationX: 0,
-    duration: 0.4,
-    stagger: {
-      amount: 0.5,
-      from: 'random',
-      grid: 'auto',
-      ease: 'power1.out'
-    },
-    ease: 'back.out(1.5)'
-  }, 0.45)
+
+  // ganti bahasa + tunggu Vue selesai re-render
+  setLocale(newLocale)
+  await nextTick()
+  movePill(true) // lebar label bisa berubah
+
+  // masuk
+  await gsap.fromTo(
+    els,
+    { opacity: 0, y: 12 },
+    {
+      opacity: 1,
+      y: 0,
+      duration: 0.4,
+      stagger: { amount: 0.45, from: "random" },
+      ease: "back.out(1.4)",
+      clearProps: "opacity,transform",
+    }
+  )
+
+  changingLanguage.value = false
 }
 
-// Debug: watch language changes
-watch(language, (newVal) => {
-  console.log('👁️ Language changed in ProPortofolio:', newVal)
-}, { immediate: true })
-
+/* ---------- nav / scroll ---------- */
 const activeSection = ref("hero")
 const isScrolled = ref(false)
+const navHidden = ref(false)
 const mobileMenuOpen = ref(false)
 
-// Theme toggle
-const isDark = ref(true)
-const themeOverlay = ref<HTMLElement | null>(null)
-const pixelGrid = ref<HTMLElement | null>(null)
+const navEl = ref<HTMLElement | null>(null)
+const pillEl = ref<HTMLElement | null>(null)
+const progressBar = ref<HTMLElement | null>(null)
 
+const NAV_SECTIONS = ["hero", "about", "projects", "tech-stack", "certificates", "blog", "friends", "contact"]
+
+let lastY = 0
+let scrollTicking = false
+let observer: IntersectionObserver | null = null
+
+function onScrollFrame() {
+  const y = window.scrollY
+  isScrolled.value = y > 20
+
+  const max = document.documentElement.scrollHeight - window.innerHeight
+  if (progressBar.value) {
+    progressBar.value.style.transform = `scaleX(${max > 0 ? y / max : 0})`
+  }
+
+  const dy = y - lastY
+  if (!mobileMenuOpen.value && y > 140) {
+    if (dy > 6 && !navHidden.value) navHidden.value = true
+    else if (dy < -6 && navHidden.value) navHidden.value = false
+  } else if (navHidden.value) {
+    navHidden.value = false
+  }
+
+  lastY = y
+  scrollTicking = false
+}
+
+function onScroll() {
+  if (scrollTicking) return
+  scrollTicking = true
+  requestAnimationFrame(onScrollFrame)
+}
+
+/* underline indicator yang menggeliding */
+function movePill(instant = false) {
+  const nav = navEl.value
+  const pill = pillEl.value
+  if (!nav || !pill) return
+
+  const active = nav.querySelector("a.active") as HTMLElement | null
+  if (!active) {
+    gsap.to(pill, { opacity: 0, duration: 0.2 })
+    return
+  }
+
+  gsap.to(pill, {
+    x: active.offsetLeft,
+    width: active.offsetWidth,
+    opacity: 1,
+    duration: instant ? 0 : 0.5,
+    ease: "power3.out",
+  })
+}
+
+/* ---------- mobile menu ---------- */
 function toggleMobileMenu() {
   mobileMenuOpen.value = !mobileMenuOpen.value
-  // Prevent body scroll when menu is open
+  navHidden.value = false
+  document.body.style.overflow = mobileMenuOpen.value ? "hidden" : ""
+
   if (mobileMenuOpen.value) {
-    document.body.style.overflow = 'hidden'
-  } else {
-    document.body.style.overflow = ''
+    nextTick(() => {
+      gsap.fromTo(
+        ".mobile-menu a",
+        { opacity: 0, x: -16 },
+        { opacity: 1, x: 0, duration: 0.35, stagger: 0.05, delay: 0.05, ease: "power3.out", clearProps: "all" }
+      )
+    })
   }
 }
+
+watch(activeSection, () => nextTick(() => movePill()))
 
 function closeMobileMenu() {
   mobileMenuOpen.value = false
-  document.body.style.overflow = ''
+  document.body.style.overflow = ""
 }
 
-function toggleTheme() {
-  if (!themeOverlay.value || !pixelGrid.value) return
-  
-  const newTheme = !isDark.value
-  const overlay = themeOverlay.value
-  const grid = pixelGrid.value
-  
-  // Set overlay color
-  const bgColor = newTheme ? '#0b0b0f' : '#f5f7fb'
-  
-  // Create grid pixels - responsive size
-  const pixelSize = window.innerWidth < 560 ? 80 : window.innerWidth < 920 ? 60 : 50
-  const cols = Math.ceil(window.innerWidth / pixelSize) + 1 // +1 untuk safety
-  const rows = Math.ceil(window.innerHeight / pixelSize) + 1 // +1 untuk safety
-  const totalPixels = cols * rows
-  
-  // Clear previous pixels
-  grid.innerHTML = ''
-  
-  // Set grid style
-  grid.style.gridTemplateColumns = `repeat(${cols}, ${pixelSize}px)`
-  grid.style.gridAutoRows = `${pixelSize}px`
-  
-  // Create pixel elements
-  const pixels: HTMLElement[] = []
-  for (let i = 0; i < totalPixels; i++) {
-    const pixel = document.createElement('div')
-    pixel.className = 'pixel'
-    pixel.style.background = bgColor
-    grid.appendChild(pixel)
-    pixels.push(pixel)
-  }
-  
-  // Show overlay
-  gsap.set(overlay, { display: 'block' })
-  gsap.set(pixels, { scale: 0, opacity: 0 })
-  
-  // Animate pixels in random order
-  const tl = gsap.timeline({
-    onComplete: () => {
-      gsap.set(overlay, { display: 'none' })
-      grid.innerHTML = ''
-    }
-  })
-  
-  // Animate in
-  tl.to(pixels, {
-    scale: 1,
-    opacity: 1,
-    duration: 0.6,
-    stagger: {
-      amount: 0.4,
-      from: 'random',
-      ease: 'power2.inOut'
-    },
-    ease: 'back.out(1.7)'
-  })
-  
-  // Change theme at midpoint
-  tl.call(() => {
-    isDark.value = newTheme
-    document.documentElement.setAttribute(
-      "data-theme",
-      newTheme ? "dark" : "light"
-    )
-    localStorage.setItem(
-      "theme",
-      newTheme ? "dark" : "light"
-    )
-  }, [], 0.3)
-  
-  // Animate out
-  tl.to(pixels, {
-    scale: 0,
-    opacity: 0,
-    duration: 0.5,
-    stagger: {
-      amount: 0.3,
-      from: 'random',
-      ease: 'power2.inOut'
-    },
-    ease: 'back.in(1.7)'
-  }, 0.7)
+function onKey(e: KeyboardEvent) {
+  if (e.key === "Escape" && mobileMenuOpen.value) closeMobileMenu()
 }
 
-let observer: IntersectionObserver | null = null
-
-const handleScroll = () => {
-  isScrolled.value = window.scrollY > 20
-}
+const onResize = () => movePill(true)
 
 onMounted(() => {
-  // Load theme
-  const saved = localStorage.getItem("theme") || "dark"
-  isDark.value = saved === "dark"
-  document.documentElement.setAttribute("data-theme", saved)
-  
-  window.addEventListener("scroll", handleScroll)
-  handleScroll()
+  window.addEventListener("scroll", onScroll, { passive: true })
+  window.addEventListener("keydown", onKey)
+  window.addEventListener("resize", onResize)
+  onScroll()
 
-  const sections = ["hero", "about", "projects", "tech-stack", "blog", "friends", "contact"]
-  
-  observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        activeSection.value = entry.target.id
-      }
-    })
-  }, {
-    rootMargin: "-20% 0px -60% 0px"
-  })
+  requestAnimationFrame(() => movePill(true))
+  ;(document as any).fonts?.ready?.then(() => movePill(true))
 
-  sections.forEach((id) => {
+  observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) activeSection.value = entry.target.id
+      })
+    },
+    { rootMargin: "-20% 0px -60% 0px" }
+  )
+
+  NAV_SECTIONS.forEach((id) => {
     const el = document.getElementById(id)
     if (el) observer?.observe(el)
   })
 })
 
+/* label berubah pas ganti bahasa → ukur ulang pill */
+watch(language, () => nextTick(() => movePill(true)))
+
 onUnmounted(() => {
-  window.removeEventListener("scroll", handleScroll)
+  window.removeEventListener("scroll", onScroll)
+  window.removeEventListener("keydown", onKey)
+  window.removeEventListener("resize", onResize)
   observer?.disconnect()
-  document.body.style.overflow = '' // Cleanup
+  document.body.style.overflow = ""
 })
-</script>
+</script>f
 
 <style scoped>
 .pro-container {
@@ -435,11 +414,9 @@ onUnmounted(() => {
 }
 
 .pro-nav a.active {
-  background: var(--border);
   color: var(--text);
   box-shadow: inset 0 0 12px var(--border-dim);
   backdrop-filter: blur(4px);
-  border: 1px solid var(--border);
 }
 
 .lang-btn {
@@ -503,44 +480,6 @@ onUnmounted(() => {
   background: var(--border);
   border-color: var(--primary);
   transform: translateY(-2px);
-}
-
-/* Theme transition overlay */
-.theme-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 99999;
-  pointer-events: none;
-  display: none;
-  overflow: hidden;
-}
-
-.pixel-grid {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: grid;
-  gap: 0;
-}
-
-.pixel {
-  will-change: transform, opacity;
-  transform-origin: center;
-  width: 100%;
-  height: 100%;
-}
-
-footer {
-  width: min(1080px, calc(100% - 80px));
-  margin: 28px auto 0;
-  color: var(--text-dim);
-  font-size: 0.85rem;
-  font-weight: 700;
 }
 
 @media (max-width: 920px) {
@@ -744,5 +683,61 @@ footer {
     min-height: 44px;
     font-size: 0.95rem;
   }
+}
+/* ===== scroll progress ===== */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2.5px;
+  z-index: 200;
+  pointer-events: none;
+}
+
+.scroll-progress i {
+  display: block;
+  height: 100%;
+  transform: scaleX(0);
+  transform-origin: left;
+  background: linear-gradient(90deg, var(--primary), #4a90e2);
+  box-shadow: 0 0 12px rgba(0, 200, 83, 0.5);
+}
+
+/* ===== underline nav ===== */
+.nav-pill {
+  position: absolute;
+  bottom: 1px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  border-radius: 999px;
+  background: var(--primary);
+  box-shadow: 0 0 10px var(--primary);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ===== auto-hide nav (override transition, taruh di bawah biar menang) ===== */
+.pro-nav,
+.mobile-nav {
+  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease,
+    backdrop-filter 0.3s ease, transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.nav-hidden {
+  transform: translateY(calc(-100% - 32px));
+}
+</style>
+<style>
+/* anchor gak kependem di bawah nav fixed */
+section[id] {
+  scroll-margin-top: 96px;
+}
+
+/* custom cursor aktif → native cursor disembunyiin */
+html.has-custom-cursor,
+html.has-custom-cursor * {
+  cursor: none !important;
 }
 </style>
